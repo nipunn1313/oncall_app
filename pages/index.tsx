@@ -34,6 +34,13 @@ export default function App() {
           </li>
         ))}
       </ul>
+      <span>TODOs</span><br/>
+      <span>Require login</span><br/>
+      <span>Include users not in rotation?</span><br/>
+      <span>Include the identity of the person paging in the page details</span><br/>
+      <span>Get colors working better</span><br/>
+      <span>Flex boxes?</span><br/>
+      <span>Slack integration</span><br/>
     </main>
   )
 }
