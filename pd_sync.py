@@ -1,3 +1,12 @@
+"""
+Instructions:
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 pd_sync.py
+"""
+import json
 import os
 from pprint import pprint
 from convex import ConvexClient
@@ -11,7 +20,7 @@ load_dotenv()
 PRIMARY_SCHEDULE = "PE2BZLJ"
 
 DEV_PROXY = 'http://localhost:8187'
-PROD = 'https://abnormal-wren-792.convex.cloud'
+PROD = json.load(open("convex.json"))["prodUrl"]
 
 api_key = os.environ['PD_API_KEY']
 pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
