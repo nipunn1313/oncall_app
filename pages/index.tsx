@@ -29,7 +29,6 @@ export default function App() {
           <li key={member._id.toString()}>
             <img src={member.avatar_url} />
             <span style={{color: member.color}}>{member.name}:</span>
-            <span>{member.color}</span>
             <span>{member.email}</span>
             <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>

@@ -11,10 +11,11 @@ load_dotenv()
 PRIMARY_SCHEDULE = "PE2BZLJ"
 
 DEV_PROXY = 'http://localhost:8187'
+PROD = 'https://abnormal-wren-792.convex.cloud'
 
 api_key = os.environ['PD_API_KEY']
 pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
-convex_client = ConvexClient(DEV_PROXY)
+convex_client = ConvexClient(PROD)
 convex_client.set_debug(True)
 
 # Sync all the members of the rotation
