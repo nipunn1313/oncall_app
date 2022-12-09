@@ -3,10 +3,10 @@ import { action } from "../_generated/server";
 
 const pd = api({token: process.env.PD_API_KEY});
 
-export default action(async ({}, destUserId: string) => {
+export default action(async ({}, destUserId: string): Promise<string> => {
   // For whatever reason it auto-acks on creation+assign, so
   // create it without assigning, then assign separately
-  const incident: any = await pd.post("/incidents", {
+  let incident: any = await pd.post("/incidents", {
     data: {
       incident: {
           type: "incident",
@@ -18,7 +18,7 @@ export default action(async ({}, destUserId: string) => {
       }
     },
   });
-  const result = await pd.put(`/incidents/${incident.data.incident.id}`, {
+  const result: any = await pd.put(`/incidents/${incident.data.incident.id}`, {
     data: {
       incident: {
           type: "incident",
@@ -31,4 +31,9 @@ export default action(async ({}, destUserId: string) => {
       },
     },
   })
+  incident = result.data.incident;
+  const assignee = incident.assignments[0].assignee.summary;
+
+  console.log(`Paged ${assignee} at ${incident.html_url}`);
+  return incident.html_url;
 });

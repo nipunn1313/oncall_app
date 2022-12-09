@@ -12,9 +12,11 @@ export default function App() {
   const style = `color:{member.color}`;
 
   async function handlePage(destUserId: string, destName: string) {
-    await page(destUserId);
     console.log(`Paging ${destName}`);
+    const url = await page(destUserId);
+    alert(`Paged ${destName} at ${url}`);
   }
+  console.log(members);
 
   return (
     <main>
@@ -26,9 +28,9 @@ export default function App() {
         {members.map((member) => (
           <li key={member._id.toString()}>
             <img src={member.avatar_url} />
-            <span>{member.name}:</span>
+            <span style={{color: member.color}}>{member.name}:</span>
+            <span>{member.color}</span>
             <span>{member.email}</span>
-            <span>color: {member.color}?</span>
             <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>
         ))}
