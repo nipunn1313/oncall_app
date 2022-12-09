@@ -5,4 +5,6 @@ export default defineSchema({
     author: s.string(),
     body: s.string(),
   }),
+  oncallMembers: defineTable(s.any()),
+  currentOncall: defineTable(s.any()),
 })
