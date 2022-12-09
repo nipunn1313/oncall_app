@@ -11,9 +11,8 @@
 
 import type { ApiFromModules } from "convex/api";
 import type * as listMessages from "../listMessages";
+import type * as oncall from "../oncall";
 import type * as sendMessage from "../sendMessage";
-import type * as updateCurrentOncall from "../updateCurrentOncall";
-import type * as updateOncallMembers from "../updateOncallMembers";
 
 /**
  * A type describing your app's public Convex API.
@@ -26,7 +25,6 @@ import type * as updateOncallMembers from "../updateOncallMembers";
  */
 export type API = ApiFromModules<{
   listMessages: typeof listMessages;
+  oncall: typeof oncall;
   sendMessage: typeof sendMessage;
-  updateCurrentOncall: typeof updateCurrentOncall;
-  updateOncallMembers: typeof updateOncallMembers;
 }>;
