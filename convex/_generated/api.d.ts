@@ -10,6 +10,7 @@
  */
 
 import type { ApiFromModules } from "convex/api";
+import type * as actions_page from "../actions/page";
 import type * as listMessages from "../listMessages";
 import type * as oncall from "../oncall";
 import type * as sendMessage from "../sendMessage";
@@ -24,6 +25,7 @@ import type * as sendMessage from "../sendMessage";
  * `ConvexReactClient` to create app-specific types.
  */
 export type API = ApiFromModules<{
+  "actions/page": typeof actions_page;
   listMessages: typeof listMessages;
   oncall: typeof oncall;
   sendMessage: typeof sendMessage;

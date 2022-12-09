@@ -1,4 +1,5 @@
-import { mutation } from './_generated/server'
+import { mutation, query } from './_generated/server'
+import { Document } from "../convex/_generated/dataModel";
 
 export const updateOncallMembers = mutation(async ({ db }, users: any[]) => {
   for (const user of users) {
@@ -19,4 +20,8 @@ export const updateCurrentOncall = mutation(async ({ db }, user: any) => {
 
   const current = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), user.id)).unique();
   await db.insert("currentOncall", {memberId: current._id});
+})
+
+export const getMembers = query(async ({db}): Promise<Document<"oncallMembers">[]> => {
+  return await db.query("oncallMembers").collect();
 })

@@ -1,46 +1,38 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { useMutation, useQuery } from '../convex/_generated/react'
+import { useMutation, useQuery, useAction } from '../convex/_generated/react'
 
 export default function App() {
-  const messages = useQuery('listMessages') || []
+  const members = useQuery('oncall:getMembers') || []
+  const page = useAction('actions/page')
 
-  const [newMessageText, setNewMessageText] = useState('')
-  const sendMessage = useMutation('sendMessage')
-
-  const [name, setName] = useState('user')
-
-  useEffect(() => {
-    setName('User ' + Math.floor(Math.random() * 10000))
-  }, [])
-
-  async function handleSendMessage(event: FormEvent) {
-    event.preventDefault()
-    setNewMessageText('')
-    await sendMessage(newMessageText, name)
+  let lastSynced = "unknown";
+  if (members[0]) {
+    lastSynced = new Date(members[0]._creationTime).toLocaleString();
   }
+  const style = `color:{member.color}`;
+
+  async function handlePage(destUserId: string, destName: string) {
+    await page(destUserId);
+    console.log(`Paging ${destName}`);
+  }
+
   return (
     <main>
-      <h1>Convex Chat</h1>
+      <h1>Convex Oncall</h1>
       <p className="badge">
-        <span>{name}</span>
+        <span>Last synced: {lastSynced}</span>
       </p>
       <ul>
-        {messages.map((message) => (
-          <li key={message._id.toString()}>
-            <span>{message.author}:</span>
-            <span>{message.body}</span>
-            <span>{new Date(message._creationTime).toLocaleTimeString()}</span>
+        {members.map((member) => (
+          <li key={member._id.toString()}>
+            <img src={member.avatar_url} />
+            <span>{member.name}:</span>
+            <span>{member.email}</span>
+            <span>color: {member.color}?</span>
+            <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>
         ))}
       </ul>
-      <form onSubmit={handleSendMessage}>
-        <input
-          value={newMessageText}
-          onChange={(event) => setNewMessageText(event.target.value)}
-          placeholder="Write a message…"
-        />
-        <input type="submit" value="Send" disabled={!newMessageText} />
-      </form>
     </main>
   )
 }

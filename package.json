@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@pagerduty/pdjs": "^2.2.4",
     "convex": "latest",
     "next": "latest",
     "react": "^18.2.0",
