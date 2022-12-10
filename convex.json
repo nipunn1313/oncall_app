@@ -3,5 +3,10 @@
   "team": "nipunn1313",
   "prodUrl": "https://abnormal-wren-792.convex.cloud",
   "functions": "convex/",
-  "authInfo": []
+  "authInfo": [
+    {
+      "domain": "https://dev-6nkf1fvj.us.auth0.com/",
+      "applicationID": "lDaoO3Rq68zK8MLRdGyzUsmvFABZNvyX"
+    }
+  ]
 }
