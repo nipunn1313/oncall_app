@@ -3,14 +3,14 @@ import { action } from "../_generated/server";
 
 const pd = api({token: process.env.PD_API_KEY});
 
-export default action(async ({}, destUserId: string): Promise<string> => {
+export default action(async ({}, destUserId: string, from: string): Promise<string> => {
   // For whatever reason it auto-acks on creation+assign, so
   // create it without assigning, then assign separately
   let incident: any = await pd.post("/incidents", {
     data: {
       incident: {
           type: "incident",
-          title: "Page from oncall_app",
+          title: `Page from ${from} via oncall_app`,
           service: {
               id: "PAZE25R",
               type: "service_reference",

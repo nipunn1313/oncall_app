@@ -14,11 +14,11 @@ export default function App() {
       <span>Source: https://github.com/nipunn1313/oncall_app</span><br/>
       <span>TODOs</span><br/>
       <span>Include users not in rotation?</span><br/>
-      <span>Include the identity of the person paging in the page details</span><br/>
       <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
       <span>Favicon</span><br/>
+      <span>Highlight current oncall?</span><br/>
     </main>
   )
 }
@@ -35,6 +35,7 @@ function ErrorFallback({error}: FallbackProps) {
 function Members() {
   const members = useQuery('oncall:getMembers')
   const page = useAction('actions/page')
+  const { user } = useAuth0();
 
   if (members === undefined) {
     return (
@@ -67,7 +68,7 @@ function Members() {
 
   async function handlePage(destUserId: string, destName: string) {
     console.log(`Paging ${destName}`);
-    const url = await page(destUserId);
+    const url = await page(destUserId, user!.email!);
     alert(`Paged ${destName} at ${url}`);
   }
 
