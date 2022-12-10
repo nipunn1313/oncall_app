@@ -33,8 +33,31 @@ function ErrorFallback({error}: FallbackProps) {
 }
 
 function Members() {
-  const members = useQuery('oncall:getMembers') || []
+  const members = useQuery('oncall:getMembers')
   const page = useAction('actions/page')
+
+  if (members === undefined) {
+    return (
+      <>
+        <p className="badge">
+          <UserName/><br/>
+          <span>Loading...</span>
+        </p>
+        <ul>
+          {Array.from(Array(8).keys()).map((i) => (
+            <li key={i}>
+              <img src="https://secure.gravatar.com/avatar/b751bc1b59c51e44f7273af171452236.png?d=mm&r=PG" />
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+  if (members.length === 0) {
+    return (
+        <span>No members found.</span>
+    )
+  }
 
   let lastSynced = "unknown";
   if (members[0]) {
@@ -47,7 +70,6 @@ function Members() {
     const url = await page(destUserId);
     alert(`Paged ${destName} at ${url}`);
   }
-  console.log(members);
 
   return (
     <>
