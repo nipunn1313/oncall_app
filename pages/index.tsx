@@ -41,6 +41,7 @@ export default function App() {
       <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
+      <span>Favicon</span><br/>
     </main>
   )
 }
