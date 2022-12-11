@@ -19,7 +19,6 @@ export default function App() {
       <LogoutButton/><br/>
       <span>Source: https://github.com/nipunn1313/oncall_app</span><br/>
       <span>TODOs</span><br/>
-      <span>Include users not in rotation?</span><br/>
       <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
@@ -99,7 +98,7 @@ function Members() {
               height={80}
               width={80}
             />
-            <span style={{color: member.color}}>{member.name}:</span>
+            <span style={{color: member.color}}>{member.name + (member.in_rotation ? " (Primary Rotation)" : "")}</span>
             <span>{member.email}</span>
             <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>

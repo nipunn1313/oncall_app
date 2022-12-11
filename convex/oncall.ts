@@ -27,7 +27,8 @@ export const updateCurrentOncall = mutation(async ({ db, auth }, user: any) => {
 
 export const getMembers = query(async ({db, auth}): Promise<Document<"oncallMembers">[]> => {
   await checkIdentity(auth);
-  return await db.query("oncallMembers").collect();
+  const members = await db.query("oncallMembers").collect();
+  return members.sort((a, b) => +b.in_rotation - +a.in_rotation);
 })
 
 

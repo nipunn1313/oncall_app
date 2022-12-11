@@ -43,17 +43,25 @@ convex_client.set_auth(token)
 
 # Sync all the members of the rotation
 try:
-    sched = pd_session.jget(f"/schedules/{PRIMARY_SCHEDULE}")["schedule"]
-    user_ids = [user["id"] for user in sched["users"]]
-    oncallMembers = [pd_session.jget(f"/users/{uid}")["user"] for uid in user_ids]
-    convex_client.mutation("oncall:updateOncallMembers", oncallMembers)
+    # Get all users from pagerduty
+    users = pd_session.jget(f"/users")["users"]
+
+    # Get just the users on the eng primary rotation
+    now = datetime.now()
+    current_oncalls = pd_session.jget(f"/schedules/{PRIMARY_SCHEDULE}/users", data={'since': now, 'until': now + timedelta(days=90)})['users']
+    assert len(current_oncalls) > 0
+    oncall_ids = [u["id"] for u in current_oncalls]
+
+    for user in users:
+        if user["id"] in oncall_ids:
+            user["in_rotation"] = True
+        else:
+            user["in_rotation"] = False
+
+    convex_client.mutation("oncall:updateOncallMembers", users)
 
     # Sync the current oncall
-    now = datetime.now()
-    current_oncalls = pd_session.jget(f"/schedules/{PRIMARY_SCHEDULE}/users", data={'since': now, 'until': now + timedelta.resolution})['users']
-    assert len(current_oncalls) == 1
-    current_oncall = current_oncalls[0]
-    convex_client.mutation("oncall:updateCurrentOncall", current_oncall)
+    convex_client.mutation("oncall:updateCurrentOncall", current_oncalls[0])
 except PDClientError as e:
     print(e.response.text)
     raise
