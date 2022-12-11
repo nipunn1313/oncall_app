@@ -36,6 +36,10 @@ async function checkIdentity(auth: Auth) {
   if (!identity) {
     throw new Error("Unauthenticated call");
   }
+  if (identity.tokenIdentifier == "https://dev-6nkf1fvj.us.auth0.com/|ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc@clients") {
+    // It's the PD sync app. We're ok to go
+    return;
+  }
   if (!identity.email) {
     throw new Error("Requires email");
   }

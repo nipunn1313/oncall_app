@@ -8,6 +8,7 @@ python3 pd_sync.py
 """
 import json
 import os
+import requests
 from pprint import pprint
 from convex import ConvexClient
 from convex.values import ConvexValue
@@ -22,10 +23,22 @@ PRIMARY_SCHEDULE = "PE2BZLJ"
 DEV_PROXY = 'http://localhost:8187'
 PROD = json.load(open("convex.json"))["prodUrl"]
 
+r = requests.post(url="https://dev-6nkf1fvj.us.auth0.com/oauth/token", json={
+    "client_id": "ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc",
+    "client_secret": os.environ["AUTH0_CLIENT_SECRET"],
+    "audience": "https://convex-oncall-app",
+    "grant_type": "client_credentials",
+})
+r.raise_for_status()
+auth0_result = r.json()
+assert auth0_result["token_type"] == "Bearer"
+token = auth0_result["access_token"]
+
 api_key = os.environ['PD_API_KEY']
 pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
 convex_client = ConvexClient(PROD)
 convex_client.set_debug(True)
+convex_client.set_auth(token)
 
 # Sync all the members of the rotation
 try:
@@ -43,3 +56,5 @@ try:
 except PDClientError as e:
     print(e.response.text)
     raise
+
+print("Sync From Pagerduty Success")
