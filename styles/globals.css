@@ -62,7 +62,7 @@ li:last-child {
   border: 0;
 }
 
-li img:nth-child(1) {
+li Image:nth-child(1) {
   min-width: 80px;
 }
 li span:nth-child(2) {
