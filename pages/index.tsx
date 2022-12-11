@@ -2,22 +2,25 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useMutation, useQuery, useAction } from '../convex/_generated/react'
 import { useAuth0 } from '@auth0/auth0-react'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
+import Head from "next/head";
 
 export default function App() {
   return (
     <main>
+      <Head>
+        <link rel="icon" href="/convex-logo-only.svg" />
+      </Head>
       <h1>Convex Oncall</h1>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <Members/>
       </ErrorBoundary>
-			<LogoutButton/><br/>
+      <LogoutButton/><br/>
       <span>Source: https://github.com/nipunn1313/oncall_app</span><br/>
       <span>TODOs</span><br/>
       <span>Include users not in rotation?</span><br/>
       <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
-      <span>Favicon</span><br/>
       <span>Highlight current oncall?</span><br/>
     </main>
   )
