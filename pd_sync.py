@@ -22,6 +22,7 @@ PRIMARY_SCHEDULE = "PE2BZLJ"
 
 DEV_PROXY = 'http://localhost:8187'
 PROD = json.load(open("convex.json"))["prodUrl"]
+CONVEX_URL = DEV_PROXY if os.getenv("DEV") else PROD
 
 r = requests.post(url="https://dev-6nkf1fvj.us.auth0.com/oauth/token", json={
     "client_id": "ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc",
@@ -36,7 +37,7 @@ token = auth0_result["access_token"]
 
 api_key = os.environ['PD_API_KEY']
 pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
-convex_client = ConvexClient(PROD)
+convex_client = ConvexClient(CONVEX_URL)
 convex_client.set_debug(True)
 convex_client.set_auth(token)
 
@@ -57,4 +58,4 @@ except PDClientError as e:
     print(e.response.text)
     raise
 
-print("Sync From Pagerduty Success")
+print(f"Sync From Pagerduty to {CONVEX_URL} Success")
