@@ -55,16 +55,15 @@ li {
   padding: 8px 16px 8px 16px;
   border-bottom: solid 1px lightgray;
   font-size: 16px;
+  min-height: 80px;
 }
 
 li:last-child {
   border: 0;
 }
 
-li span:nth-child(1) {
-  font-weight: bold;
-  margin-right: 4px;
-  white-space: nowrap;
+li img:nth-child(1) {
+  min-width: 80px;
 }
 li span:nth-child(2) {
   margin-right: 4px;
