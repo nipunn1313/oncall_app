@@ -10,5 +10,7 @@ export default defineSchema({
     in_rotation: s.boolean(),
     // there are more fields
   }),
-  currentOncall: defineTable(s.any()),
+  currentOncall: defineTable({
+    memberId: s.id("oncallMembers")
+  }),
 })

@@ -1,5 +1,5 @@
 import { mutation, query } from './_generated/server'
-import { Document } from "../convex/_generated/dataModel";
+import { Document, Id } from "../convex/_generated/dataModel";
 import { Auth } from "convex/server";
 
 export const updateOncallMembers = mutation(async ({ db, auth }, users: any[]) => {
@@ -16,7 +16,7 @@ export const updateOncallMembers = mutation(async ({ db, auth }, users: any[]) =
 
 export const updateCurrentOncall = mutation(async ({ db, auth }, user: any) => {
   await checkIdentity(auth);
-  const prev = await db.query("currentOncall").first();
+  const prev = await db.query("currentOncall").unique();
   if (prev) {
     db.delete(prev._id);
   }
@@ -30,9 +30,16 @@ export const updateCurrentOncall = mutation(async ({ db, auth }, user: any) => {
 export const getMembers = query(async ({db, auth}): Promise<Document<"oncallMembers">[]> => {
   await checkIdentity(auth);
   const members = await db.query("oncallMembers").collect();
-  return members.sort((a, b) => +b.in_rotation - +a.in_rotation);
+  const current = await db.query("currentOncall").unique();
+  return members.sort((a, b) => (
+    (+b.in_rotation + +(b._id.equals(current!.memberId))) -
+    (+a.in_rotation + +(a._id.equals(current!.memberId)))
+  ));
 })
 
+export const getCurrentOncall = query(async ({db, auth}): Promise<Document<"currentOncall"> | null> => {
+  return db.query("currentOncall").unique();
+})
 
 async function checkIdentity(auth: Auth) {
   const identity = await auth.getUserIdentity();

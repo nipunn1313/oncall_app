@@ -22,7 +22,6 @@ export default function App() {
       <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
-      <span>Highlight current oncall?</span><br/>
     </main>
   )
 }
@@ -38,6 +37,7 @@ function ErrorFallback({error}: FallbackProps) {
 
 function Members() {
   const members = useQuery('oncall:getMembers')
+  const current = useQuery('oncall:getCurrentOncall')
   const page = useAction('actions/page')
   const { user } = useAuth0();
 
@@ -70,8 +70,8 @@ function Members() {
   }
 
   let lastSynced = "unknown";
-  if (members[0]) {
-    lastSynced = new Date(members[0]._creationTime).toLocaleString();
+  if (current) {
+    lastSynced = new Date(current._creationTime).toLocaleString();
   }
   const style = `color:{member.color}`;
 
@@ -79,6 +79,11 @@ function Members() {
     console.log(`Paging ${destName}`);
     const url = await page(destUserId, user!.email!);
     alert(`Paged ${destName} at ${url}`);
+  }
+
+  console.log(current);
+  for (const member of members) {
+    console.log(member._id);
   }
 
   return (
@@ -98,7 +103,7 @@ function Members() {
               height={80}
               width={80}
             />
-            <span style={{color: member.color}}>{member.name + (member.in_rotation ? " (Primary Rotation)" : "")}</span>
+            <span style={{color: member.color}}>{member.name + ((current && member._id.equals(current.memberId)) ? " (Current Primary)" : "")}</span>
             <span>{member.email}</span>
             <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>

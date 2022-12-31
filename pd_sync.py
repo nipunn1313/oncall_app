@@ -51,12 +51,12 @@ try:
 
     # Get just the users on the eng primary rotation
     now = datetime.now()
-    current_oncalls = pd_session.jget(
+    oncalls = pd_session.jget(
         f"/schedules/{PRIMARY_SCHEDULE}/users",
         data={"since": now, "until": now + timedelta(days=90)},
     )["users"]
-    assert len(current_oncalls) > 0
-    oncall_ids = [u["id"] for u in current_oncalls]
+    assert len(oncalls) > 0
+    oncall_ids = [u["id"] for u in oncalls]
 
     for user in users:
         if user["id"] in oncall_ids:
@@ -67,7 +67,12 @@ try:
     convex_client.mutation("oncall:updateOncallMembers", users)
 
     # Sync the current oncall
-    convex_client.mutation("oncall:updateCurrentOncall", current_oncalls[0])
+    current_oncall = pd_session.jget(
+        f"/schedules/{PRIMARY_SCHEDULE}/users",
+        data={"since": now, "until": now + timedelta.resolution},
+    )["users"]
+    assert len(current_oncall) == 1
+    convex_client.mutation("oncall:updateCurrentOncall", current_oncall[0])
 except PDClientError as e:
     print(e.response.text)
     raise
