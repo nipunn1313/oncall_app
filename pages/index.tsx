@@ -22,7 +22,6 @@ export default function App() {
       <LogoutButton/><br/>
       <span>Source: https://github.com/nipunn1313/oncall_app</span><br/>
       <span>TODOs</span><br/>
-      <span>Get colors working better</span><br/>
       <span>Flex boxes?</span><br/>
       <span>Slack integration</span><br/>
     </main>
@@ -106,6 +105,13 @@ function Member({member, current}: MemberProps) {
     alert(`Paged ${member.name} at ${url}`);
   }
 
+  let color = member.color.replace(/-/g, '');
+  switch (color) {
+    case "cayenne":
+      color = "#ac0000"
+      break;
+  }
+
   return (
     <li>
       <Image
@@ -116,10 +122,17 @@ function Member({member, current}: MemberProps) {
         height={80}
         width={80}
       />
-      <span style={{color: member.color.replace(/-/g,'')}}>{member.name + (
-        (current && member._id.equals(current.primaryId)) ? " (Current Primary)" :
-        (current && member._id.equals(current.secondaryId)) ? " (Current Secondary)" : ""
-      )}</span>
+      <span style={{
+        backgroundColor: color,
+        color: "white",
+      }}>
+        {member.name}
+        <br/>
+        {
+          (current && member._id.equals(current.primaryId)) ? "(Current Primary)" :
+          (current && member._id.equals(current.secondaryId)) ? " (Current Secondary)" : ""
+        }
+      </span>
       <span>{member.email}</span>
       <button onClick={handlePage}>Page Me!</button>
     </li>

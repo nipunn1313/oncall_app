@@ -66,6 +66,7 @@ li Image:nth-child(1) {
   min-width: 80px;
 }
 li span:nth-child(2) {
+  width: 200px;
   margin-right: 4px;
   word-break: break-word;
 }
