@@ -83,7 +83,9 @@ function Members() {
         <span>Last synced: {lastSynced}</span>
       </p>
       <ul>
-        {members.map((member) => <Member member={member} current={current}/>)}
+        {members.map((member) => (
+          <Member key={member._id.toString()} member={member} current={current}/>
+        ))}
       </ul>
     </>
   )
@@ -105,7 +107,7 @@ function Member({member, current}: MemberProps) {
   }
 
   return (
-    <li key={member._id.toString()}>
+    <li>
       <Image
         src={member.avatar_url}
         alt={`Avatar for ${member.name}`}
