@@ -5,7 +5,7 @@ import { Auth } from "convex/server";
 export const updateOncallMembers = mutation(async ({ db, auth }, users: any[]) => {
   await checkIdentity(auth);
   for (const user of users) {
-    const current = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), user.id)).first();
+    const current = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), user.id)).unique();
     if (current) {
       db.replace(current._id, user);
     } else {
@@ -22,7 +22,9 @@ export const updateCurrentOncall = mutation(async ({ db, auth }, user: any) => {
   }
 
   const current = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), user.id)).unique();
-  await db.insert("currentOncall", {memberId: current._id});
+  if (current) {
+    await db.insert("currentOncall", {memberId: current._id});
+  }
 })
 
 export const getMembers = query(async ({db, auth}): Promise<Document<"oncallMembers">[]> => {
