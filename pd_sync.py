@@ -19,6 +19,7 @@ from pdpyras import APISession, PDClientError
 load_dotenv()
 
 PRIMARY_SCHEDULE = "PE2BZLJ"
+SECONDARY_SCHEDULE = "P8M5WT3"
 
 DEV_PROXY = "http://localhost:8187"
 PROD = json.load(open("convex.json"))["prodUrl"]
@@ -66,13 +67,18 @@ try:
 
     convex_client.mutation("oncall:updateOncallMembers", users)
 
-    # Sync the current oncall
-    current_oncall = pd_session.jget(
+    # Sync the current oncalls
+    current_primary = pd_session.jget(
         f"/schedules/{PRIMARY_SCHEDULE}/users",
         data={"since": now, "until": now + timedelta.resolution},
     )["users"]
-    assert len(current_oncall) == 1
-    convex_client.mutation("oncall:updateCurrentOncall", current_oncall[0])
+    current_secondary = pd_session.jget(
+        f"/schedules/{SECONDARY_SCHEDULE}/users",
+        data={"since": now, "until": now + timedelta.resolution},
+    )["users"]
+    assert len(current_primary) == 1
+    assert len(current_secondary) == 1
+    convex_client.mutation("oncall:updateCurrentOncall", current_primary[0], current_secondary[0])
 except PDClientError as e:
     print(e.response.text)
     raise

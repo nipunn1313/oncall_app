@@ -81,11 +81,6 @@ function Members() {
     alert(`Paged ${destName} at ${url}`);
   }
 
-  console.log(current);
-  for (const member of members) {
-    console.log(member._id);
-  }
-
   return (
     <>
       <p className="badge">
@@ -103,7 +98,10 @@ function Members() {
               height={80}
               width={80}
             />
-            <span style={{color: member.color}}>{member.name + ((current && member._id.equals(current.memberId)) ? " (Current Primary)" : "")}</span>
+            <span style={{color: member.color}}>{member.name + (
+              (current && member._id.equals(current.primaryId)) ? " (Current Primary)" :
+              (current && member._id.equals(current.secondaryId)) ? " (Current Secondary)" : ""
+            )}</span>
             <span>{member.email}</span>
             <button onClick={() => handlePage(member.id, member.name)}>Page Me!</button>
           </li>

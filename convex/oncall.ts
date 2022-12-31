@@ -14,16 +14,17 @@ export const updateOncallMembers = mutation(async ({ db, auth }, users: any[]) =
   }
 })
 
-export const updateCurrentOncall = mutation(async ({ db, auth }, user: any) => {
+export const updateCurrentOncall = mutation(async ({ db, auth }, primary: any, secondary: any) => {
   await checkIdentity(auth);
   const prev = await db.query("currentOncall").unique();
   if (prev) {
     db.delete(prev._id);
   }
 
-  const current = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), user.id)).unique();
-  if (current) {
-    await db.insert("currentOncall", {memberId: current._id});
+  const currPrimary = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), primary.id)).unique();
+  const currSecondary = await db.query("oncallMembers").filter(q => q.eq(q.field("id"), secondary.id)).unique();
+  if (currPrimary && currSecondary) {
+    await db.insert("currentOncall", {primaryId: currPrimary._id, secondaryId: currSecondary._id});
   }
 })
 
@@ -31,10 +32,14 @@ export const getMembers = query(async ({db, auth}): Promise<Document<"oncallMemb
   await checkIdentity(auth);
   const members = await db.query("oncallMembers").collect();
   const current = await db.query("currentOncall").unique();
-  return members.sort((a, b) => (
-    (+b.in_rotation + +(b._id.equals(current!.memberId))) -
-    (+a.in_rotation + +(a._id.equals(current!.memberId)))
-  ));
+  const key = (m: Document<"oncallMembers">) => {
+    return (
+      +m.in_rotation +
+      (2 * +m._id.equals(current!.primaryId)) +
+      (+m._id.equals(current!.secondaryId))
+    );
+  };
+  return members.sort((a, b) => key(b) - key(a));
 })
 
 export const getCurrentOncall = query(async ({db, auth}): Promise<Document<"currentOncall"> | null> => {
