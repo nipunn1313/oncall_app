@@ -1,3 +1,4 @@
+convex
 python-dotenv
 pdpyras
 requests
