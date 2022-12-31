@@ -20,22 +20,25 @@ load_dotenv()
 
 PRIMARY_SCHEDULE = "PE2BZLJ"
 
-DEV_PROXY = 'http://localhost:8187'
+DEV_PROXY = "http://localhost:8187"
 PROD = json.load(open("convex.json"))["prodUrl"]
 CONVEX_URL = PROD if os.getenv("PROD") else DEV_PROXY
 
-r = requests.post(url="https://dev-6nkf1fvj.us.auth0.com/oauth/token", json={
-    "client_id": "ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc",
-    "client_secret": os.environ["AUTH0_CLIENT_SECRET"],
-    "audience": "https://convex-oncall-app",
-    "grant_type": "client_credentials",
-})
+r = requests.post(
+    url="https://dev-6nkf1fvj.us.auth0.com/oauth/token",
+    json={
+        "client_id": "ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc",
+        "client_secret": os.environ["AUTH0_CLIENT_SECRET"],
+        "audience": "https://convex-oncall-app",
+        "grant_type": "client_credentials",
+    },
+)
 r.raise_for_status()
 auth0_result = r.json()
 assert auth0_result["token_type"] == "Bearer"
 token = auth0_result["access_token"]
 
-api_key = os.environ['PD_API_KEY']
+api_key = os.environ["PD_API_KEY"]
 pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
 convex_client = ConvexClient(CONVEX_URL)
 convex_client.set_debug(True)
@@ -48,7 +51,10 @@ try:
 
     # Get just the users on the eng primary rotation
     now = datetime.now()
-    current_oncalls = pd_session.jget(f"/schedules/{PRIMARY_SCHEDULE}/users", data={'since': now, 'until': now + timedelta(days=90)})['users']
+    current_oncalls = pd_session.jget(
+        f"/schedules/{PRIMARY_SCHEDULE}/users",
+        data={"since": now, "until": now + timedelta(days=90)},
+    )["users"]
     assert len(current_oncalls) > 0
     oncall_ids = [u["id"] for u in current_oncalls]
 
