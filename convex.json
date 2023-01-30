@@ -7,10 +7,6 @@
     {
       "domain": "https://dev-6nkf1fvj.us.auth0.com/",
       "applicationID": "lDaoO3Rq68zK8MLRdGyzUsmvFABZNvyX"
-    },
-    {
-      "domain": "https://dev-6nkf1fvj.us.auth0.com/",
-      "applicationID": "https://convex-oncall-app"
     }
   ]
 }
