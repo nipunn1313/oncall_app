@@ -11,7 +11,7 @@ export default defineSchema({
     // there are more fields
   }),
   currentOncall: defineTable({
-    primaryId: s.id("oncallMembers"),
-    secondaryId: s.id("oncallMembers"),
+    primaryId: s.id('oncallMembers'),
+    secondaryId: s.id('oncallMembers'),
   }),
 })
