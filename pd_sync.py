@@ -18,20 +18,20 @@ from pdpyras import APISession, PDClientError
 
 from convex import ConvexClient
 
-load_dotenv()
+load_dotenv(".env.local")
+if os.getenv("PROD"):
+    load_dotenv(".env")
 
 PRIMARY_SCHEDULE = "PE2BZLJ"
 SECONDARY_SCHEDULE = "P8M5WT3"
 
-DEV_PROXY = "http://localhost:8187"
-PROD = json.load(open("convex.json"))["prodUrl"]
-CONVEX_URL = PROD if os.getenv("PROD") else DEV_PROXY
 
-pd_api_key = os.environ["PD_API_KEY"]
-pd_session = APISession(pd_api_key, default_from="oncall_app@convex.dev")
+CONVEX_URL = os.environ["NEXT_PUBLIC_CONVEX_URL"]
+PD_API_KEY = os.environ["PD_API_KEY"]
+SYNC_KEY = os.environ["SYNC_KEY"]
+pd_session = APISession(PD_API_KEY, default_from="oncall_app@convex.dev")
 convex_client = ConvexClient(CONVEX_URL)
 convex_client.set_debug(True)
-sync_key = os.environ["SYNC_KEY"]
 
 # Sync all the members of the rotation
 try:
@@ -53,7 +53,7 @@ try:
         else:
             user["in_rotation"] = False
 
-    convex_client.mutation("oncall:updateOncallMembers", sync_key, users)
+    convex_client.mutation("oncall:updateOncallMembers", SYNC_KEY, users)
 
     # Sync the current oncalls
     current_primary = pd_session.jget(
@@ -67,7 +67,7 @@ try:
     assert len(current_primary) == 1
     assert len(current_secondary) == 1
     convex_client.mutation(
-        "oncall:updateCurrentOncall", sync_key, current_primary[0], current_secondary[0]
+        "oncall:updateCurrentOncall", SYNC_KEY, current_primary[0], current_secondary[0]
     )
 except PDClientError as e:
     print(e.response.text)
