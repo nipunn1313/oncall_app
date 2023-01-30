@@ -8,13 +8,15 @@ python3 pd_sync.py
 """
 import json
 import os
-import requests
-from pprint import pprint
-from convex import ConvexClient
-from convex.values import ConvexValue
 from datetime import datetime, timedelta
+from pprint import pprint
+
+import requests
+from convex.values import ConvexValue
 from dotenv import load_dotenv
 from pdpyras import APISession, PDClientError
+
+from convex import ConvexClient
 
 load_dotenv()
 
@@ -25,25 +27,11 @@ DEV_PROXY = "http://localhost:8187"
 PROD = json.load(open("convex.json"))["prodUrl"]
 CONVEX_URL = PROD if os.getenv("PROD") else DEV_PROXY
 
-r = requests.post(
-    url="https://dev-6nkf1fvj.us.auth0.com/oauth/token",
-    json={
-        "client_id": "ggwCKUkxxiQtdLMP9Q6Z2DQXSavPd9xc",
-        "client_secret": os.environ["AUTH0_CLIENT_SECRET"],
-        "audience": "https://convex-oncall-app",
-        "grant_type": "client_credentials",
-    },
-)
-r.raise_for_status()
-auth0_result = r.json()
-assert auth0_result["token_type"] == "Bearer"
-token = auth0_result["access_token"]
-
-api_key = os.environ["PD_API_KEY"]
-pd_session = APISession(api_key, default_from="oncall_app@convex.dev")
+pd_api_key = os.environ["PD_API_KEY"]
+pd_session = APISession(pd_api_key, default_from="oncall_app@convex.dev")
 convex_client = ConvexClient(CONVEX_URL)
 convex_client.set_debug(True)
-convex_client.set_auth(token)
+sync_key = os.environ["SYNC_KEY"]
 
 # Sync all the members of the rotation
 try:
@@ -65,7 +53,7 @@ try:
         else:
             user["in_rotation"] = False
 
-    convex_client.mutation("oncall:updateOncallMembers", users)
+    convex_client.mutation("oncall:updateOncallMembers", sync_key, users)
 
     # Sync the current oncalls
     current_primary = pd_session.jget(
@@ -78,7 +66,9 @@ try:
     )["users"]
     assert len(current_primary) == 1
     assert len(current_secondary) == 1
-    convex_client.mutation("oncall:updateCurrentOncall", current_primary[0], current_secondary[0])
+    convex_client.mutation(
+        "oncall:updateCurrentOncall", sync_key, current_primary[0], current_secondary[0]
+    )
 except PDClientError as e:
     print(e.response.text)
     raise
