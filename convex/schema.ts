@@ -1,17 +1,21 @@
-import { defineSchema, defineTable, s } from 'convex/schema'
+import { defineSchema, defineTable } from 'convex/server'
+import { v } from 'convex/values'
 
-export default defineSchema({
-  oncallMembers: defineTable({
-    id: s.string(),
-    name: s.string(),
-    email: s.string(),
-    color: s.string(),
-    avatar_url: s.string(),
-    in_rotation: s.boolean(),
-    // there are more fields
-  }),
-  currentOncall: defineTable({
-    primaryId: s.id('oncallMembers'),
-    secondaryId: s.id('oncallMembers'),
-  }),
-})
+export default defineSchema(
+  {
+    oncallMembers: defineTable({
+      id: v.string(),
+      name: v.string(),
+      email: v.string(),
+      color: v.string(),
+      avatar_url: v.string(),
+      in_rotation: v.boolean(),
+      // there are more fields
+    }),
+    currentOncall: defineTable({
+      primaryId: v.id('oncallMembers'),
+      secondaryId: v.id('oncallMembers'),
+    }),
+  },
+  { schemaValidation: false }
+)

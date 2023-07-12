@@ -6,13 +6,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 python3 pd_sync.py
 """
-import json
 import os
 from datetime import datetime, timedelta
-from pprint import pprint
 
-import requests
-from convex.values import ConvexValue
 from dotenv import load_dotenv
 from pdpyras import APISession, PDClientError
 
@@ -36,7 +32,7 @@ convex_client.set_debug(True)
 # Sync all the members of the rotation
 try:
     # Get all users from pagerduty
-    users = pd_session.jget(f"/users")["users"]
+    users = pd_session.jget("/users")["users"]
 
     # Get just the users on the eng primary rotation
     now = datetime.now()
@@ -53,7 +49,9 @@ try:
         else:
             user["in_rotation"] = False
 
-    convex_client.mutation("oncall:updateOncallMembers", SYNC_KEY, users)
+    convex_client.mutation(
+        "oncall:updateOncallMembers", {"syncKey": SYNC_KEY, "users": users}
+    )
 
     # Sync the current oncalls
     current_primary = pd_session.jget(
@@ -67,7 +65,12 @@ try:
     assert len(current_primary) == 1
     assert len(current_secondary) == 1
     convex_client.mutation(
-        "oncall:updateCurrentOncall", SYNC_KEY, current_primary[0], current_secondary[0]
+        "oncall:updateCurrentOncall",
+        {
+            "syncKey": SYNC_KEY,
+            "primary": current_primary[0],
+            "secondary": current_secondary[0],
+        },
     )
 except PDClientError as e:
     print(e.response.text)

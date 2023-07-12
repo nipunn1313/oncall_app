@@ -1,9 +1,9 @@
 import { mutation, query } from './_generated/server'
-import { Document, Id } from '../convex/_generated/dataModel'
+import { Doc } from '../convex/_generated/dataModel'
 import { Auth } from 'convex/server'
 
 export const updateOncallMembers = mutation(
-  async ({ db }, syncKey: string, users: any[]) => {
+  async ({ db }, { syncKey, users }: { syncKey: string; users: any[] }) => {
     if (!syncKey || syncKey != process.env['SYNC_KEY']) {
       throw new Error('Bad Sync Key')
     }
@@ -23,7 +23,14 @@ export const updateOncallMembers = mutation(
 )
 
 export const updateCurrentOncall = mutation(
-  async ({ db }, syncKey: string, primary: any, secondary: any) => {
+  async (
+    { db },
+    {
+      syncKey,
+      primary,
+      secondary,
+    }: { syncKey: string; primary: any; secondary: any }
+  ) => {
     if (!syncKey || syncKey != process.env['SYNC_KEY']) {
       throw new Error('Bad Sync Key')
     }
@@ -47,19 +54,27 @@ export const updateCurrentOncall = mutation(
         secondaryId: currSecondary._id,
       })
     }
+
+    return 'success'
+  }
+)
+
+export const getMembersMutation = mutation(
+  async ({ db }): Promise<Doc<'currentOncall'> | null> => {
+    return await db.query('currentOncall').unique()
   }
 )
 
 export const getMembers = query(
-  async ({ db, auth }): Promise<Document<'oncallMembers'>[]> => {
+  async ({ db, auth }): Promise<Doc<'oncallMembers'>[]> => {
     await checkIdentity(auth)
     const members = await db.query('oncallMembers').collect()
     const current = await db.query('currentOncall').unique()
-    const key = (m: Document<'oncallMembers'>) => {
+    const key = (m: Doc<'oncallMembers'>) => {
       return (
         +m.in_rotation +
-        2 * +m._id.equals(current!.primaryId) +
-        +m._id.equals(current!.secondaryId)
+        2 * +(m._id === current!.primaryId) +
+        +(m._id === current!.secondaryId)
       )
     }
     return members.sort((a, b) => key(b) - key(a))
@@ -67,7 +82,8 @@ export const getMembers = query(
 )
 
 export const getCurrentOncall = query(
-  async ({ db, auth }): Promise<Document<'currentOncall'> | null> => {
+  async ({ db, auth }): Promise<Doc<'currentOncall'> | null> => {
+    await checkIdentity(auth)
     return db.query('currentOncall').unique()
   }
 )
