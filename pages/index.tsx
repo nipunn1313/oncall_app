@@ -35,6 +35,12 @@ export default function App() {
       <br />
       <span>Slack integration</span>
       <br />
+      <span>Confirmation Dialog on Page</span>
+      <br />
+      <span>Ability to put a message into the incident body</span>
+      <br />
+      <span>Fix updateOncallMembers so it removes stale members</span>
+      <br />
     </main>
   )
 }
