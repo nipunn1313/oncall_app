@@ -116,11 +116,13 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  min-width: 165px;
 }
 
 .leftAlignedPageTag {
   display: flex;
   height: fit-content;
+  flex: 1;
 }
 
 .pageMeButton {

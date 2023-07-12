@@ -94,11 +94,7 @@ function Members() {
       </p>
       <ul>
         {members.map((member) => (
-          <Member
-            key={member._id.toString()}
-            member={member}
-            current={current}
-          />
+          <Member key={member._id} member={member} current={current} />
         ))}
       </ul>
     </>
