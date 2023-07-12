@@ -41,6 +41,7 @@ export default function App() {
       <br />
       <span>Fix updateOncallMembers so it removes stale members</span>
       <br />
+      {/* <Dialog>Hi</Dialog> */}
     </main>
   )
 }
@@ -197,4 +198,36 @@ function UserName() {
   console.log('Loading UserName')
   console.log(x)
   return <>Logged in{user!.email ? ` as ${user!.email}` : ''}</>
+}
+
+function Dialog({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        zIndex: 99,
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: '#fefefe',
+          padding: 8,
+          borderRadius: 8,
+          width: '80%',
+          maxWidth: 640,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  )
 }
