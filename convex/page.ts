@@ -1,3 +1,4 @@
+'use node'
 import { api } from '@pagerduty/pdjs'
 import { action } from './_generated/server'
 
