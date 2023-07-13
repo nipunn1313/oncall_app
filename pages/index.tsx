@@ -128,12 +128,16 @@ function Member({ member, current }: MemberProps) {
     setConfirmOpen(false)
   }
 
-  async function handlePage() {
+  async function handlePage(message: string) {
     setConfirmOpen(false)
     const result = await membersMutation()
     console.log(result)
     console.log(`Paging ${member.name}`)
-    const url = await page({ destUserId: member.id, from: user!.email! })
+    const url = await page({
+      destUserId: member.id,
+      from: user!.email!,
+      message: message ? message : null,
+    })
     alert(`Paged ${member.name} at ${url}`)
   }
 
@@ -264,7 +268,7 @@ function Dialog(props: {
 function ConfirmPageDialog(props: {
   member: Doc<'oncallMembers'>
   closeConfirm: () => any
-  confirmPage: () => any
+  confirmPage: (message: string) => any
 }) {
   const [message, setMessage] = useState('')
   return (
@@ -292,7 +296,7 @@ function ConfirmPageDialog(props: {
           <button className="secondary" onClick={props.closeConfirm}>
             Cancel
           </button>
-          <button onClick={props.confirmPage}>Page</button>
+          <button onClick={() => props.confirmPage(message)}>Page</button>
         </div>
       </div>
     </Dialog>

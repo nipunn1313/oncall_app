@@ -6,12 +6,13 @@ const pd = api({ token: process.env.PD_API_KEY })
 
 export default action(
   async (
-    {},
-    { destUserId, from }: { destUserId: string; from: string }
+    _ctx,
+    args: { destUserId: string; from: string; message: string | null }
   ): Promise<string> => {
     if (!process.env.CONVEX_CLOUD_URL!.includes('abnormal-wren-792')) {
-      console.log(`Would have paged ${destUserId}`)
-      return `Would have paged ${destUserId}`
+      const error = `Would have paged ${args.destUserId} with message: ${args.message}`
+      console.log(error)
+      return error
     }
     // For whatever reason it auto-acks on creation+assign, so
     // create it without assigning, then assign separately
@@ -19,7 +20,7 @@ export default action(
       data: {
         incident: {
           type: 'incident',
-          title: `Page from ${from} via oncall_app`,
+          title: `Page from ${args.from} via oncall_app`,
           service: {
             id: 'PAZE25R',
             type: 'service_reference',
@@ -36,7 +37,7 @@ export default action(
             assignments: [
               {
                 assignee: {
-                  id: destUserId,
+                  id: args.destUserId,
                   type: 'user_reference',
                 },
               },
