@@ -20,7 +20,7 @@ export default action(
       data: {
         incident: {
           type: 'incident',
-          title: `Page from ${args.from} via oncall_app`,
+          title: `Page from ${args.from} via oncall_app: ${args.message}`,
           service: {
             id: 'PAZE25R',
             type: 'service_reference',

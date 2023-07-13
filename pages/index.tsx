@@ -287,6 +287,7 @@ function ConfirmPageDialog(props: {
         <textarea
           style={{ width: '80%', minHeight: 40 }}
           value={message}
+          autoFocus
           onChange={(event) => {
             setMessage(event.target.value)
           }}
