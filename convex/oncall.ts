@@ -1,5 +1,5 @@
 import { mutation, query } from './_generated/server'
-import { Doc } from '../convex/_generated/dataModel'
+import { Doc, Id } from '../convex/_generated/dataModel'
 import { Auth } from 'convex/server'
 
 export const updateOncallMembers = mutation(
@@ -8,7 +8,13 @@ export const updateOncallMembers = mutation(
       throw new Error('Bad Sync Key')
     }
 
+    const remaining = new Map<string, Id<'oncallMembers'>>()
+    for (const user of await db.query('oncallMembers').collect()) {
+      remaining.set(user.id, user._id)
+    }
+
     for (const user of users) {
+      remaining.delete(user.id)
       const current = await db
         .query('oncallMembers')
         .filter((q) => q.eq(q.field('id'), user.id))
@@ -18,6 +24,10 @@ export const updateOncallMembers = mutation(
       } else {
         await db.insert('oncallMembers', user)
       }
+    }
+
+    for (const id of remaining.values()) {
+      db.delete(id)
     }
   }
 )

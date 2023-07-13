@@ -36,8 +36,6 @@ export default function App() {
       <br />
       <span>Slack integration</span>
       <br />
-      <span>Fix updateOncallMembers so it removes stale members</span>
-      <br />
       {/* <Dialog>Hi</Dialog> */}
     </main>
   )
