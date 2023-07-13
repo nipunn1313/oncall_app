@@ -7,6 +7,7 @@ import { Doc } from '../convex/_generated/dataModel'
 import Head from 'next/head'
 import Image from 'next/image'
 import placeholder from '../public/placeholder.png'
+import { useRef, useState } from 'react'
 
 const blurPlaceholder =
   'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2NjIpLCBxdWFsaXR5ID0gOTAK/9sAQwADAgIDAgIDAwMDBAMDBAUIBQUEBAUKBwcGCAwKDAwLCgsLDQ4SEA0OEQ4LCxAWEBETFBUVFQwPFxgWFBgSFBUU/9sAQwEDBAQFBAUJBQUJFA0LDRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU/8AAEQgAUABQAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+uKKKKACiiigAoq9Y6FqOprutLG4uE/vRxEr+fSlvtB1LTU33VhcW6f35IiF/PpQBQooooAKKKKACiiigAr1LwB8O4fssWp6pEJXkAeG3cfKo7Mw7k+n+RwXhbTl1bxFp9q4zHJKN49VHJH5A19CgYGB0oAFUIoVQFUcADoKGUMCCAQeCDS0UAec+Pvh3BJay6lpcQimjBeW3QYVx3Kjsfbv9evlVfTdfPfi7TV0nxLqFrGNsaSkoo7Kw3AfkaAMiiiigAooooA2vBl6mn+KdNnc4QTBST2DfLn9a+ga+ZOlez+AfHMOuWkVldyhNSjG35j/AK4DuPf1H40AdpRRRQAV4D44vU1DxZqUyHKebsBHfaAv9K9N8eeOYdAs5LS1kD6lINoCnPkg/wAR9/QV4qSSSSck0AFFFFABRRU1naS393DbQIXmlYIijuTQBc0Dw/eeI75bWzj3Hq8jcKg9Sa9g8OfDzS9AVJHjF5eDkzTDIB/2V6D+fvWl4X8OQeGdKjtYgGkPzSy45du5+npWvQAUUUUAcv4k+Hml6+ryLGLO8PPnQjAJ/wBpeh/n7149r/h+88OXzWt5HtPVJF5Vx6g19E1keKPDkHibSpLWUBZB80UuOUbsfp60AfPdFTXlpLYXc1tOhSaJijqexFQ0AFeg/CHRhc6nc6jIuVtl2R5/vt1P4D+defV7T8KbUW/hNJAOZ5ncn6Hb/wCy0AdlRRRQAUUUUAFFFFAHkvxe0YW2p22oxrhbldkmP769D+I/lXn1e0/Fa1Fx4TeQjmCZHB+p2/8As1eLUAf/2Q=='
@@ -117,8 +118,18 @@ function Member({ member, current }: MemberProps) {
   const membersMutation = useMutation(api.oncall.getMembersMutation)
   const page = useAction(api.page.default)
   const { user } = useAuth0()
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  function handleConfirmOpen() {
+    setConfirmOpen(true)
+  }
+
+  function handleConfirmClose() {
+    setConfirmOpen(false)
+  }
 
   async function handlePage() {
+    setConfirmOpen(false)
     const result = await membersMutation()
     console.log(result)
     console.log(`Paging ${member.name}`)
@@ -166,9 +177,16 @@ function Member({ member, current }: MemberProps) {
       </div>
       <div className="rightAlignedPageTag">
         <span>{member.email}</span>
-        <button className="pageMeButton" onClick={handlePage}>
+        <button className="pageMeButton" onClick={handleConfirmOpen}>
           Page Me!
         </button>
+        {confirmOpen && (
+          <ConfirmPageDialog
+            member={member}
+            confirmPage={handlePage}
+            closeConfirm={handleConfirmClose}
+          />
+        )}
       </div>
     </li>
   )
@@ -200,7 +218,12 @@ function UserName() {
   return <>Logged in{user!.email ? ` as ${user!.email}` : ''}</>
 }
 
-function Dialog({ children }: { children: React.ReactNode }) {
+// Purely visual component
+function Dialog(props: {
+  onClickOutside: () => any
+  children: React.ReactNode
+}) {
+  const outsideRef = useRef<HTMLDivElement>(null)
   return (
     <div
       style={{
@@ -216,6 +239,12 @@ function Dialog({ children }: { children: React.ReactNode }) {
         alignItems: 'center',
         justifyContent: 'center',
       }}
+      onClick={(e) => {
+        if (e.target === outsideRef.current) {
+          props.onClickOutside()
+        }
+      }}
+      ref={outsideRef}
     >
       <div
         style={{
@@ -226,8 +255,46 @@ function Dialog({ children }: { children: React.ReactNode }) {
           maxWidth: 640,
         }}
       >
-        {children}
+        {props.children}
       </div>
     </div>
+  )
+}
+
+function ConfirmPageDialog(props: {
+  member: Doc<'oncallMembers'>
+  closeConfirm: () => any
+  confirmPage: () => any
+}) {
+  const [message, setMessage] = useState('')
+  return (
+    <Dialog onClickOutside={props.closeConfirm}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <h2>Page: {props.member.name}?</h2>
+        <p>Email: {props.member.email}</p>
+        <br />
+        Message:
+        <textarea
+          style={{ width: '80%', minHeight: 40 }}
+          value={message}
+          onChange={(event) => {
+            setMessage(event.target.value)
+          }}
+        ></textarea>
+        <br />
+        <div>
+          <button className="secondary" onClick={props.closeConfirm}>
+            Cancel
+          </button>
+          <button onClick={props.confirmPage}>Page</button>
+        </div>
+      </div>
+    </Dialog>
   )
 }

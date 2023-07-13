@@ -112,6 +112,17 @@ button:disabled {
   background-color: rgb(122, 160, 248);
 }
 
+button.secondary {
+  background: white;
+  box-shadow: inset 0px 0px 0px 2px black;
+  color: black;
+}
+
+textarea {
+  border-radius: 4px;
+  box-shadow: inset 0px 0px 0px 1px black;
+}
+
 .rightAlignedPageTag {
   display: flex;
   flex-direction: column;
