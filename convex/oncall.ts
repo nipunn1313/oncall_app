@@ -20,14 +20,14 @@ export const updateOncallMembers = mutation(
         .filter((q) => q.eq(q.field('id'), user.id))
         .unique()
       if (current) {
-        db.replace(current._id, user)
+        await db.replace(current._id, user)
       } else {
         await db.insert('oncallMembers', user)
       }
     }
 
     for (const id of remaining.values()) {
-      db.delete(id)
+      await db.delete(id)
     }
   }
 )
@@ -47,7 +47,7 @@ export const updateCurrentOncall = mutation(
 
     const prev = await db.query('currentOncall').unique()
     if (prev) {
-      db.delete(prev._id)
+      await db.delete(prev._id)
     }
 
     const currPrimary = await db
