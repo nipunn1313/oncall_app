@@ -77,6 +77,7 @@ export const getMembersMutation = mutation(
 
 export const getMembers = query(
   async ({ db, auth }): Promise<Doc<'oncallMembers'>[]> => {
+    helper1()
     await checkIdentity(auth)
     const members = await db.query('oncallMembers').collect()
     const current = await db.query('currentOncall').unique()
@@ -90,6 +91,18 @@ export const getMembers = query(
     return members.sort((a, b) => key(b) - key(a))
   }
 )
+
+function helper1() {
+  helper2()
+}
+
+function helper2() {
+  helper3()
+}
+
+function helper3() {
+  throw Error('A disaster in helper3')
+}
 
 export const getCurrentOncall = query(
   async ({ db, auth }): Promise<Doc<'currentOncall'> | null> => {
