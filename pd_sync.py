@@ -6,6 +6,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 python3 pd_sync.py
 """
+
 import os
 from datetime import datetime, timedelta
 
@@ -27,7 +28,6 @@ PD_API_KEY = os.environ["PD_API_KEY"]
 SYNC_KEY = os.environ["SYNC_KEY"]
 pd_session = APISession(PD_API_KEY, default_from="oncall_app@convex.dev")
 convex_client = ConvexClient(CONVEX_URL)
-convex_client.set_debug(True)
 
 # Sync all the members of the rotation
 try:
